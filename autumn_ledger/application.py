@@ -5,7 +5,9 @@ from .reference.coverage import Coverage
 from .records.intake import Intake
 from .records.csv_input import FileIntake
 from .analysis.engine import AnalysisEngine
+from .analysis.refresh import Refresh
 from .editions.service import Editions
+from .editions.advance import Advances
 from .editions.review import Review
 from .editions.export import Export
 from .editions.investigation import Investigation
@@ -24,7 +26,9 @@ class Ledger:
         self.intake = Intake(self.database, self.catalog)
         self.files = FileIntake(self.intake)
         self.analysis = AnalysisEngine(self.database, self.catalog, self.calendars, self.coverage, self.intake)
+        self.refresh = Refresh(self.database, self.catalog, self.calendars, self.coverage, self.intake, self.analysis)
         self.editions = Editions(self.database, self.analysis)
+        self.advances = Advances(self.database, self.editions, self.refresh, self.analysis)
         self.review = Review(self.database, self.editions)
         self.export = Export(self.editions, self.review)
         self.investigation = Investigation(self.database, self.editions, self.intake, self.catalog)

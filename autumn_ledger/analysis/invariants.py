@@ -17,7 +17,7 @@ def check_totals(cube):
                         total["gross_cents"] - total["refund_cents"], total["net_cents"]))
     result.append(check("family_subset", total["family_orders"] <= total["orders"], total["orders"], total["family_orders"]))
     result.append(check("children_subset", total["children"] <= total["travelers"], total["travelers"], total["children"]))
-    for name, rows in cube["tables"].items():
+    for name, rows in sorted(cube["tables"].items()):
         for metric in MEASURES:
             actual = sum(row["measures"][metric] for row in rows)
             result.append(check(f"partition:{name}:{metric}", actual == total[metric], total[metric], actual))

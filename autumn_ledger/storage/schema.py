@@ -19,6 +19,9 @@ STATEMENTS = (
     "CREATE TABLE IF NOT EXISTS decisions (id INTEGER PRIMARY KEY AUTOINCREMENT, edition_id TEXT NOT NULL REFERENCES editions(id), edition_version INTEGER NOT NULL, action TEXT NOT NULL, actor TEXT NOT NULL, note TEXT NOT NULL, created_at TEXT NOT NULL)",
     "CREATE TABLE IF NOT EXISTS channels (name TEXT PRIMARY KEY, edition_id TEXT NOT NULL REFERENCES editions(id), generation INTEGER NOT NULL)",
     "CREATE TABLE IF NOT EXISTS publication_history (id INTEGER PRIMARY KEY AUTOINCREMENT, channel TEXT NOT NULL, generation INTEGER NOT NULL, edition_id TEXT NOT NULL REFERENCES editions(id), actor TEXT NOT NULL, created_at TEXT NOT NULL, UNIQUE(channel,generation))",
+    "CREATE TABLE IF NOT EXISTS advances (id TEXT PRIMARY KEY, advance_key TEXT NOT NULL UNIQUE, source_edition_id TEXT NOT NULL REFERENCES editions(id), result_edition_id TEXT NOT NULL REFERENCES editions(id), from_revision INTEGER NOT NULL, to_revision INTEGER NOT NULL, mode TEXT NOT NULL CHECK(mode IN ('incremental','full')), fallback TEXT, request_digest TEXT NOT NULL, report TEXT NOT NULL, actor TEXT NOT NULL, created_at TEXT NOT NULL)",
+    "CREATE INDEX IF NOT EXISTS advance_source ON advances(source_edition_id)",
+    "CREATE INDEX IF NOT EXISTS advance_result ON advances(result_edition_id)",
 )
 
 

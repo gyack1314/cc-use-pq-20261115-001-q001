@@ -9,7 +9,7 @@ from ..analysis.narrative import explain_result
 from ..analysis.trends import robust_flags
 from .models import (CatalogWrite, CalendarWrite, CoverageWrite, EventBatch, FileBatch, FileInspect,
                      AnalysisRequest, EditionRequest, DecisionRequest, PublishRequest, RetireRequest,
-                     EditionComparison, ProfileRequest, AnomalyRequest)
+                     EditionComparison, ProfileRequest, AnomalyRequest, AdvanceRequest)
 
 
 def request_value(value):
@@ -135,6 +135,23 @@ def create_app(path=None):
     @app.post("/editions/{identity}/verify")
     def verify(identity: str):
         return ledger.editions.verify(identity)
+
+    @app.post("/editions/{identity}/advances")
+    def advance_edition(identity: str, body: AdvanceRequest):
+        return ledger.advances.advance(identity, body.advance_key, body.target_revision,
+                                       body.delta_limit, body.actor)
+
+    @app.get("/editions/{identity}/advances")
+    def edition_advances(identity: str, limit: int = 100, offset: int = 0):
+        return ledger.advances.list(identity, limit, offset)
+
+    @app.get("/advances")
+    def list_advances(edition: str | None = None, limit: int = 100, offset: int = 0):
+        return ledger.advances.list(edition, limit, offset)
+
+    @app.get("/advances/{identity}")
+    def get_advance(identity: str):
+        return ledger.advances.get(identity)
 
     @app.post("/edition-comparison")
     def compare(body: EditionComparison):

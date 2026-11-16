@@ -78,10 +78,25 @@ def run_demo():
             assert stale.status_code == 409
             assert stale.json()["error"]["code"] == "stale_edition"
             assert client.post(f"/editions/{identity}/verify").json()["ok"]
+            advance = client.post(f"/editions/{identity}/advances", json={"advance_key": "demo-advance-1"})
+            assert advance.status_code == 200, advance.text
+            advanced = advance.json()
+            assert advanced["mode"] == "incremental"
+            assert advanced["report"]["read"]["order_events_scanned"] == 1
+            assert advanced["result_edition"]["summary"]["net_cents"] == 110000
+            replay = client.post(f"/editions/{identity}/advances", json={"advance_key": "demo-advance-1"})
+            assert replay.json()["replayed"]
+            assert replay.json()["result_edition_id"] == advanced["result_edition_id"]
+            audit = client.get(f"/advances/{advanced['id']}")
+            assert audit.status_code == 200
+            assert audit.json()["report"]["consistency"]["integrity_ok"]
             replacement = client.post("/editions", json={"request_key": "demo-2", "request": request_data()}).json()
             assert replacement["summary"]["net_cents"] == 110000
+            assert advanced["result_edition"]["summary"] == replacement["summary"]
             assert ledger.database.integrity()["ok"]
             return {"ok": True, "orders": 3, "original_net_cents": 120000, "corrected_net_cents": 110000,
                     "stale_publish_blocked": True, "old_snapshot_reproduced": True,
                     "bundle_verified": True, "revision_before_correction": revision,
+                    "incremental_advance": True, "incremental_events_read": 1,
+                    "incremental_matches_full": True,
                     "final_revision": ledger.database.revision()}

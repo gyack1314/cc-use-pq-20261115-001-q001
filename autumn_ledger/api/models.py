@@ -60,6 +60,13 @@ class EditionRequest(StrictModel):
     request: AnalysisRequest
 
 
+class AdvanceRequest(StrictModel):
+    advance_key: StrictStr
+    target_revision: StrictInt | None = None
+    delta_limit: StrictInt | None = None
+    actor: StrictStr = "operator"
+
+
 class DecisionRequest(StrictModel):
     action: Literal["approve", "reject", "reopen"]
     expected_version: StrictInt

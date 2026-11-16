@@ -6,6 +6,8 @@
 测试：python -B -m unittest discover -s tests -v
 构建：python -B -m autumn_ledger.check_source
 数据完整性：python -B -m autumn_ledger check --database autumn-ledger.sqlite3
+增量推进：POST /editions/{id}/advances 以已完成分析为起点推进到指定数据版本。
+推进核查：GET /advances/{id} 查看本次读取的订单修订、重算的统计范围与回退原因。
 金额单位为人民币分；订单修订为全量快照，退款为累计值。
 出游日期是供应商给出的目的地本地日期；事件时间必须含时区。
 取消不计出游人数，未退收入仍计入净额。缺报不等于零需求。
